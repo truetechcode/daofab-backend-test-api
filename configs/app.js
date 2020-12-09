@@ -1,9 +1,11 @@
 const express = require('express');
+var cors = require('cors')
 
 module.exports = function () {
   let server = express(),
     create,
     start;
+  server.use(cors())
 
   create = (config) => {
     let routes = require('../routes');

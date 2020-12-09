@@ -7,10 +7,4 @@ router.get('/', parentService.getParents);
 
 router.get('/:id', parentService.getParentById);
 
-router.post('/', parentService.createParent);
-
-router.put('/:id', parentService.updateParent);
-
-router.delete('/:id', parentService.deleteParent);
-
 module.exports = router;

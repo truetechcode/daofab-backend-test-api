@@ -26,12 +26,12 @@ const getParents = async (req, res, next) => {
       return { ...parent, totalPaidAmount: Children.data.filter(child => child.parentId === parent.id).reduce((previous, current) => previous += current.paidAmount, 0) }
     });
 
-    // console.log(newparent)
 
     if (parents.length > 0) {
       return res.status(200).json({
         'message': 'parents fetched successfully',
-        'data': newparent
+        'data': newparent,
+        'totalPage': Math.ceil(Parents.data.length / 2)
       });
     }
 
@@ -53,7 +53,8 @@ const getParentById = async (req, res, next) => {
     let children = Children.data.filter(child => child.parentId == req.params.id);
 
     let newChildren = children.map((child) => {
-      return { ...child, totalAmount: Parents.data.find(parent => parent.id == req.params.id).totalAmount }
+      let parent = Parents.data.find(parent => parent.id == req.params.id)
+      return { ...child, totalAmount: parent.totalAmount, sender: parent.sender, receiver: parent.receiver }
     });
 
     if (newChildren) {
@@ -77,20 +78,7 @@ const getParentById = async (req, res, next) => {
   }
 }
 
-
-const createParent = async (req, res, next) => {
-}
-
-const updateParent = async (req, res, next) => {
-}
-
-const deleteParent = async (req, res, next) => {
-}
-
 module.exports = {
   getParents,
-  getParentById,
-  createParent,
-  updateParent,
-  deleteParent
+  getParentById
 }

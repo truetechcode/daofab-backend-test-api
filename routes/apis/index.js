@@ -4,7 +4,7 @@ const express = require('express');
 let router = express.Router();
 
 
-router.use('/parents', parentController);
+router.use('/', parentController);
 
 
 module.exports = router;
