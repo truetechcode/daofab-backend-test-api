@@ -1,21 +1,43 @@
 const express = require('express');
-const Parent = require('../../models/parent');
+const Parents = require('../../models/parent');
+const Children = require('../../models/child');
 
 const getParents = async (req, res, next) => {
   try {
+    let parents = Parents.data;
 
-    let parents = Parent.data;
-    console.log(parents)
+    if (req.query.page == 1) {
+      let page = req.query.page,
+        limit = 2,
+        startLimit = 0,
+        endLimit = limit * page;
+
+      parents = parents.slice(startLimit, endLimit)
+    } else {
+      let page = req.query.page,
+        limit = 2,
+        startLimit = (limit * (page - 1)),
+        endLimit = limit * page;
+
+      parents = parents.slice(startLimit, endLimit)
+    }
+
+    let newparent = parents.map((parent) => {
+      return { ...parent, totalPaidAmount: Children.data.filter(child => child.parentId === parent.id).reduce((previous, current) => previous += current.paidAmount, 0) }
+    });
+
+    // console.log(newparent)
+
     if (parents.length > 0) {
       return res.status(200).json({
-        'message': 'users fetched successfully',
-        'data': parents
+        'message': 'parents fetched successfully',
+        'data': newparent
       });
     }
 
     return res.status(404).json({
       'code': 'BAD_REQUEST_ERROR',
-      'description': 'No users found in the system'
+      'description': 'No parents found in the system'
     });
   } catch (error) {
     return res.status(500).json({
@@ -27,13 +49,17 @@ const getParents = async (req, res, next) => {
 
 const getParentById = async (req, res, next) => {
   try {
-    console.log(req.params.id)
-    let parent = Parent.data.find(parent => parent['id'] == req.params.id);
 
-    if (parent) {
+    let children = Children.data.filter(child => child.parentId == req.params.id);
+
+    let newChildren = children.map((child) => {
+      return { ...child, totalAmount: Parents.data.find(parent => parent.id == req.params.id).totalAmount }
+    });
+
+    if (newChildren) {
       return res.status(200).json({
         'message': `user with id ${req.params.id} fetched successfully`,
-        'data': parent
+        'data': newChildren
       });
     }
 
